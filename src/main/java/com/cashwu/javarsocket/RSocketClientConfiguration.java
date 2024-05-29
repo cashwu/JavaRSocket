@@ -23,9 +23,19 @@ public class RSocketClientConfiguration {
 //            request.route("greeting").data("Hello RSocket!").retrieveMono(String.class)
 //                   .subscribe(resp -> log.info("Got a response : {}", resp));
 
-            var who = "cash";
-            request.route("greeting2/{name}", who).data("Hello RSocket!").retrieveMono(String.class)
-                   .subscribe(resp -> log.info("Got a response : {}", resp));
+//            var who = "cash";
+//            request.route("greeting2/{name}", who).data("Hello RSocket!").retrieveMono(String.class)
+//                   .subscribe(resp -> log.info("Got a response : {}", resp));
+
+
+            var symbol = "1234";
+            request.route("stock/{symbol}", symbol)
+                    .retrieveFlux(StockQuote.class)
+                   .subscribe(a -> log.info(
+                           "price of {} : {} (at {})",
+                           a.getSymbol(),
+                           a.getPrice(),
+                           a.getTimestamp()));
         };
 
     }
