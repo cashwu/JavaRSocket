@@ -5,8 +5,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import reactor.core.publisher.Flux;
 
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.time.Duration;
 
 /**
  * @author cash.wu
@@ -38,10 +40,26 @@ public class RSocketClientConfiguration {
 //                           a.getPrice(),
 //                           a.getTimestamp()));
 
-                        request.route("alert")
-                               .data(new Alert(Alert.EnumLevel.YELLOW, "aaa", "Cash", Instant.now()))
-                                .send()
-                               .subscribe();
+//                        request.route("alert")
+//                               .data(new Alert(Alert.EnumLevel.YELLOW, "aaa", "Cash", Instant.now()))
+//                                .send()
+//                               .subscribe();
+
+            var gratuityInFlux = Flux.fromArray(
+                    new GratuityIn[] {new GratuityIn(BigDecimal.valueOf(10.00), 15),
+                                      new GratuityIn(BigDecimal.valueOf(5.00), 20),
+                                      new GratuityIn(BigDecimal.valueOf(3.00), 10),})
+                    .delayElements(Duration.ofSeconds(1));
+
+
+            request.route("gratuity")
+                    .data(gratuityInFlux)
+                    .retrieveFlux(GratuityOut.class)
+                    .subscribe(a -> {
+                        log.info("{} % gratuity on {} is {}", a.getPercent(), a.getBillTotal(),
+                                 a.getGratuity());
+                    });
+
         };
 
     }
