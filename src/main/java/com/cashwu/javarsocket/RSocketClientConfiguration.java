@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.RSocketRequester;
 
+import java.time.Instant;
+
 /**
  * @author cash.wu
  * @since 2024/05/29
@@ -27,15 +29,19 @@ public class RSocketClientConfiguration {
 //            request.route("greeting2/{name}", who).data("Hello RSocket!").retrieveMono(String.class)
 //                   .subscribe(resp -> log.info("Got a response : {}", resp));
 
+//            var symbol = "1234";
+//            request.route("stock/{symbol}", symbol)
+//                    .retrieveFlux(StockQuote.class)
+//                   .subscribe(a -> log.info(
+//                           "price of {} : {} (at {})",
+//                           a.getSymbol(),
+//                           a.getPrice(),
+//                           a.getTimestamp()));
 
-            var symbol = "1234";
-            request.route("stock/{symbol}", symbol)
-                    .retrieveFlux(StockQuote.class)
-                   .subscribe(a -> log.info(
-                           "price of {} : {} (at {})",
-                           a.getSymbol(),
-                           a.getPrice(),
-                           a.getTimestamp()));
+                        request.route("alert")
+                               .data(new Alert(Alert.EnumLevel.YELLOW, "aaa", "Cash", Instant.now()))
+                                .send()
+                               .subscribe();
         };
 
     }
